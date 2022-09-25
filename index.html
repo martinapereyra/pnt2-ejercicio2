@@ -4,7 +4,8 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Ejemplo 1</title>
+    <title>NT2 - Trabajo Práctico No 2
+    </title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
@@ -13,14 +14,29 @@
 </head>
 
 
-<div class="container-fluid mt-3" id="app">
-    <input type="text" class="form-control" v-model="criterioDeBusqueda"
-        placeholder="Ingresar un criterio de busqueda...">
+<div class="container-fluid mt-3 px-5" id="app">
+
+    <br>
+        <h2 class="text-center pb-5">{{titulo}}</h2>
+
+    <input type="text" class="form-control" v-model="busquedaNombre"
+        placeholder="Nombre y Apellido">
+        <br>
+        <div v-if=!validarCarNombre class="alert alert-danger" role="alert">
+            {{advertencia}}
+          </div>
+        <br>
+    <input type="text" class="form-control" v-model="busquedaDni"
+        placeholder="DNI">
+        <br>
+        <div v-if=!validarCarDni  class="alert alert-danger" role="alert">
+            {{advertencia}}
+          </div>
     <br>
     <div class="card-deck m-0">
         <div class="row">
-            <div class="col" v-for="persona in personasFiltradas">
-                <div class="card mb-3">
+            <div  class="col" v-for="persona in filtrar">
+                <div class="card mb-3 ">
                     <div class="card-body">
                         <h5 class="card-title">{{getNombreCompleto(persona)}}</h5>
                         <p class="card-text">dni {{persona.dni}}</p>
@@ -28,6 +44,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
@@ -39,8 +56,13 @@
     new Vue({
         el: '#app',
         data: {
-            criterioDeBusqueda: '',
-            //Aquí, en este array es donde tienen que agregar su información
+            titulo: "Trabajo Práctico No 2- Filtro de búsqueda",
+            busquedaNombre: '',
+            busquedaDni: '',
+            advertencia: "Ingrese al menos tres caracteres para iniciar el filtrado",
+            caracteresMin: 3,
+            validarDni: true,
+            validarNombre: true,
             personas: [
                 {
                     nombre: "Daniel",
@@ -49,26 +71,86 @@
                     dni: "20442873"
                 },
                 {
-                    nombre: "...",
-                    apellido: "...",
-                    correo: "...",
-                    dni: "..."
+                    nombre: "Pablo",
+                    apellido: "Perez",
+                    correo: "pabloperez@hotmail.com",
+                    dni: "20445214"
+                },
+                {
+                    nombre: "Martina",
+                    apellido: "Pereyra",
+                    correo: "martinapereyra12@gmail.com",
+                    dni: "111111111"
+                },
+                {
+                    nombre: "Daniel",
+                    apellido: "Sarchez",
+                    correo: "danielsanchez68@hotmail.com",
+                    dni: "204412873"
+                },
+                {
+                    nombre: "Maria",
+                    apellido: "Gomez",
+                    correo: "mariaGomez125@gmail.com",
+                    dni: "22222222"
+                },
+                {
+                    nombre: "Marisa",
+                    apellido: "Gomez",
+                    correo: "marisaGomez125@gmail.com",
+                    dni: "222333333"
                 },
             ]
 
         },
         computed: {
-            personasFiltradas() {
-                return this.personas.filter((persona) => {
-                    let registroCompleto = `${persona.nombre} ${persona.apellido} ${persona.dni} ${persona.correo}`
-                    return registroCompleto.toLowerCase().includes(this.criterioDeBusqueda.toLowerCase())
-                });
-            }
+
+            filtrar(){
+                let personasFiltradas;
+                if(this.validarCarNombre && this.validarCarDni) personasFiltradas = this.filtrarTodo()
+                else if(this.validarCarDni) personasFiltradas = this.filtrarDni();
+                else if(this.validarCarNombre) personasFiltradas = this.filtrarNombre();
+                else personasFiltradas = this.personas
+                return personasFiltradas;
+            },
+
+            validarCarNombre(){
+                this.validarNombre = this.busquedaNombre.trim().length > this.caracteresMin
+                return this.validarNombre;
+            },
+
+            validarCarDni(){
+                this.validarDni = this.busquedaDni.trim().length > this.caracteresMin
+                return this.validarDni;
+            },
+            
         },
         methods: {
             getNombreCompleto(persona) {
                 return `${persona.nombre} ${persona.apellido}`
-            }
+            },
+
+            filtrarTodo() {
+                return this.personas.filter((persona) => {
+                    let registroCompleto = `${persona.nombre} ${persona.apellido} ${persona.dni}`
+                    return registroCompleto.toLowerCase().includes(this.busquedaDni.toLowerCase())  && registroCompleto.toLowerCase().includes(this.busquedaNombre.toLowerCase())
+                });
+            },
+
+            filtrarNombre() {
+                return this.personas.filter((persona) => {
+                    let registroCompleto = `${persona.nombre} ${persona.apellido}`
+                    return registroCompleto.toLowerCase().includes(this.busquedaNombre.toLowerCase())
+                });
+            },
+            filtrarDni() {
+                return this.personas.filter((persona) => {
+                    let registroCompleto = `${persona.dni}`
+                    return registroCompleto.toLowerCase().includes(this.busquedaDni.toLowerCase())
+                });
+            },
+            
+
         }
     });
 </script>
